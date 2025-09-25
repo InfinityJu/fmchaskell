@@ -48,12 +48,12 @@ pred zero = zero
 even :: Nat -> Nat
 even O = S O
 even (S O) = O
-even (S x) = even x
+even (S(S x)) = even x
 
 odd :: Nat -> Nat
 odd O = O
 odd (S O) = S O
-odd (S x) = odd x
+odd (S (S x)) = odd x
 
 -- This is called the dotminus or monus operator
 -- (also: proper subtraction, arithmetic subtraction, ...).
