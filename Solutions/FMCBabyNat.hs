@@ -2,7 +2,7 @@
 module FMCBabyNat where
 
 -- Do not alter this import!
-import Prelude ( Show(..) , Eq(..) , undefined )
+import Prelude ( Show(..) , Eq(..) , undefined, error )
 import System.Win32 (xBUTTON1, kEYEVENTF_EXTENDEDKEY)
 
 -- Define evenerything that is undefined,
@@ -87,48 +87,51 @@ infixl 8 ^
 
 -- quotient
 (/) :: Nat -> Nat -> Nat
-x / zero = undefined
-zero / x = zero
-x / one = x
-x / y = 
-  case monus x y of
-    zero -> 
-      case absDiff x y of
-        O -> one
-        k -> O
-    (S z) -> S((x-*y)/y) 
+O / x = O
+x / y =
+  case y of
+    O -> undefined
+    S z ->
+      case monus x y of
+        O ->
+          case monus y x of
+            O -> one
+            w -> O
+        S w -> S ((x -* y)/y)
 
 infixl 7 /
 
 -- remainder
 (%) :: Nat -> Nat -> Nat
-zero % x = zero
-x % zero = undefined
-x % one = zero
+O % x = O
 x % y =
-  case monus x y of
-    O ->
-      case absDiff x y of
-        O -> O
-        z -> x
-    (S z) -> (x -* y) % y
+  case y of
+    O -> undefined
+    S z ->
+      case monus x y of
+        O ->
+          case monus y x of
+            O -> O
+            w -> x
+        S w -> (x -* y)%y
 
 -- divides
 -- just for a change, we start by defining the "symbolic" operator
 -- and then define `devides` as a synonym to it
 -- again, outputs: O means False, S O means True
 (|||) :: Nat -> Nat -> Nat
-zero ||| x = undefined
-one ||| x = S O
 y ||| x =
-  case x % y of
-    zero -> S O
-    k -> O
+  case y of
+    O -> undefined
+    z ->
+      case x % y of
+        O -> S O
+        w -> O
 
 -- x `absDiff` y = |x - y|
 -- (Careful here: this - is the actual minus operator we know from the integers!)
 absDiff :: Nat -> Nat -> Nat
-absDiff O O = O 
+absDiff O O = O
 absDiff O x = x
 absDiff x O = x
 absDiff (S x) (S y) = absDiff x y
@@ -150,8 +153,10 @@ sg x = one
 
 -- lo b a is the floor of the logarithm base b of a
 lo :: Nat -> Nat -> Nat
-lo x one = zero
 lo x y =
-  case monus x y of
-    O -> S(lo x (y / x))
-    (S z) -> O
+  case monus y x of
+    O ->
+      case monus x y of
+        O -> one
+        S z -> O
+    S z -> S (lo x (y / x))
