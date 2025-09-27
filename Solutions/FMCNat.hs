@@ -61,13 +61,13 @@ instance Ord Nat where
     min O O = O
     min O x = O
     min x O = O
-    min (S x) (S y) = min x y
+    min (S x) (S y) = S(min x y)
 
 
     max O O = O
     max O x = x
     max x O = x
-    max (S x) (S y) = max x y
+    max (S x) (S y) = S(max x y)
 
 ----------------------------------------------------------------
 -- some sugar
@@ -117,6 +117,8 @@ odd (S (S x)) = odd x
 (<+>) x O = x
 (<+>) x (S y) = S (x + y)
 
+infixl 1 <+>
+
 -- This is called the dotminus or monus operator
 -- (also: proper subtraction, arithmetic subtraction, ...).
 -- It behaves like subtraction, except that it returns 0
@@ -132,6 +134,8 @@ monus (S x) (S y) = monus x y
 (<->) :: Nat -> Nat -> Nat
 (<->) = monus
 
+infixl 1 <->
+
 -- multiplication
 times :: Nat -> Nat -> Nat
 (times) x  O = O
@@ -140,6 +144,8 @@ times :: Nat -> Nat -> Nat
 
 (<*>) :: Nat -> Nat -> Nat
 (<*>) = times
+
+infixl 2 <*>
 
 -- power / exponentiation
 pow :: Nat -> Nat -> Nat
@@ -152,6 +158,8 @@ exp = pow
 
 (<^>) :: Nat -> Nat -> Nat
 (<^>) = pow
+
+infixl 3 <^>
 
 -- quotient
 (</>) :: Nat -> Nat -> Nat
@@ -166,6 +174,8 @@ exp = pow
             O -> one
             w -> O
         S w -> S ((</>) (x -* y) y)
+
+infixl 2 </>
 
 -- remainder
 (<%>) :: Nat -> Nat -> Nat
@@ -262,6 +272,5 @@ instance Num Nat where
     signum = sg
     fromInteger x
       | x < 0     = undefined
-      | x == 0    = O
-      | otherwise = S (fromInteger (x - 1))
-
+      | x == 0    = undefined
+      | otherwise = undefined
