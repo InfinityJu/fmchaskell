@@ -42,32 +42,32 @@ instance Show Nat where
 
 instance Eq Nat where
 
-    (==) O O = True
-    (==) O n = False
-    (==) n O = False
-    (==) (S n) (S m) = (==) n m
+    O == O = True
+    O == j = False
+    j == O = False
+    (S j) == (S u) = j == u
 
 instance Ord Nat where
 
-    (<=) O O = True
-    (<=) O x = True
-    (<=) x O = False
-    (<=) (S x) (S y) = (<=) x y
+    O <= O = True
+    O <= j = True
+    j <= O = False
+    (S j) <= (S u) = j <= u
 
     -- Ord does not REQUIRE defining min and max.
     -- Howevener, you should define them WITHOUT using (<=).
     -- Both are binary functions: max m n = ..., etc.
 
     min O O = O
-    min O x = O
-    min x O = O
-    min (S x) (S y) = S(min x y)
+    min O j = O
+    min j O = O
+    min (S j) (S u) = S (min j u)
 
 
     max O O = O
-    max O x = x
-    max x O = x
-    max (S x) (S y) = S(max x y)
+    max O j = j
+    max j O = j
+    max (S j) (S u) = S (max j u)
 
 ----------------------------------------------------------------
 -- some sugar
@@ -90,22 +90,22 @@ eight = S seven
 
 isZero :: Nat -> Bool
 isZero O = True
-isZero x = False
+isZero j = False
 
 -- pred is the predecessor but we define zero's to be zero
 pred :: Nat -> Nat
-pred (S x) = x
+pred (S j) = j
 pred zero = zero
 
 even :: Nat -> Bool
 even O = True
 even (S O) = False
-even (S(S x)) = even x
+even (S(S j)) = even j
 
 odd :: Nat -> Bool
 odd O = False
 odd (S O) = True
-odd (S (S x)) = odd x
+odd (S (S j)) = odd j
 
 
 ----------------------------------------------------------------
@@ -114,8 +114,8 @@ odd (S (S x)) = odd x
 
 -- addition
 (<+>) :: Nat -> Nat -> Nat
-(<+>) x O = x
-(<+>) x (S y) = S (x + y)
+j <+> O = j
+j <+> (S u) = S (j <+> u)
 
 infixl 1 <+>
 
@@ -124,9 +124,9 @@ infixl 1 <+>
 -- It behaves like subtraction, except that it returns 0
 -- when "normal" subtraction would return a negative number.
 monus :: Nat -> Nat -> Nat
-monus x O = x
-monus O x = O
-monus (S x) (S y) = monus x y
+monus j O = j
+monus O j = O
+monus (S j) (S u) = monus j u
 
 (-*) :: Nat -> Nat -> Nat
 (-*) = monus
@@ -138,9 +138,9 @@ infixl 1 <->
 
 -- multiplication
 times :: Nat -> Nat -> Nat
-(times) x  O = O
-(times) x (S O) = x
-(times) x (S y) = (<+>) (times x y) x
+(times) j  O = O
+(times) j (S O) = j
+(times) j (S u) = times j u <+> j
 
 (<*>) :: Nat -> Nat -> Nat
 (<*>) = times
@@ -149,9 +149,9 @@ infixl 2 <*>
 
 -- power / exponentiation
 pow :: Nat -> Nat -> Nat
-(pow) x O = S O
-(pow) (S O) x = S O
-(pow) x (S y) = pow x y * x
+(pow) j O = S O
+(pow) (S O) j = S O
+(pow) j (S u) = pow j u <*> j
 
 exp :: Nat -> Nat -> Nat
 exp = pow
@@ -163,47 +163,47 @@ infixl 3 <^>
 
 -- quotient
 (</>) :: Nat -> Nat -> Nat
-(</>) O x = O
-(</>) x y =
-  case y of
+O </> j = O
+j </> u =
+  case u of
     O -> undefined
-    S z ->
-      case monus x y of
+    S l ->
+      case monus j u of
         O ->
-          case monus y x of
+          case monus u j of
             O -> one
-            w -> O
-        S w -> S ((</>) (x -* y) y)
+            i -> O
+        S a -> S ((j -* u) </> u)
 
 infixl 2 </>
 
 -- remainder
 (<%>) :: Nat -> Nat -> Nat
-(<%>) O x = O
-(<%>) x y =
-  case y of
+O <%> j = O
+j <%> u =
+  case u of
     O -> undefined
-    S z ->
-      case monus x y of
+    S l ->
+      case monus j u of
         O ->
-          case monus y x of
+          case monus u j of
             O -> O
-            w -> x
-        S w -> (<%>) (x -* y) y
+            i -> j
+        S a -> (j -* u) <%> u
 
 -- euclidean division
 eucdiv :: (Nat, Nat) -> (Nat, Nat)
-eucdiv (x, y) = ((</>) x y, (<%>) x y)
+eucdiv (j, u) = (j </> u, j <%> u)
 
 -- divides
 (<|>) :: Nat -> Nat -> Bool
-(<|>) y x =
-  case y of
+j <|> u =
+  case j of
     O -> undefined
-    z ->
-      case (<%>) x y of
+    l ->
+      case u <%> j of
         O -> True
-        w -> False
+        i -> False
 
 divides = (<|>)
 
@@ -213,21 +213,21 @@ divides = (<|>)
 -- (Careful here: this - is the real minus operator!)
 dist :: Nat -> Nat -> Nat
 dist O O = O
-dist O x = x
-dist x O = x
-dist (S x) (S y) = dist x y
+dist O j = j
+dist j O = j
+dist (S j) (S u) = dist j u
 
 (|-|) = dist
 
 factorial :: Nat -> Nat
 factorial O = one
 factorial (S O) = one
-factorial (S x) = S x * factorial x
+factorial (S j) = S j <*> factorial j
 
 -- signum of a number (-1, 0, or 1)
 sg :: Nat -> Nat
 sg O = zero
-sg x = S O
+sg j = S O
 
 -- lo b a is the floor of the logarithm base b of a
 lo :: Nat -> Nat -> Nat
@@ -272,5 +272,5 @@ instance Num Nat where
     signum = sg
     fromInteger x
       | x < 0     = undefined
-      | x == 0    = undefined
-      | otherwise = undefined
+      | x == 0    = O
+      | otherwise = S (fromInteger (x - 1))
