@@ -17,9 +17,6 @@ import Prelude
     , error
     , otherwise
     )
-import Distribution.Simple.Setup (trueArg, TestFlags (testDistPref))
-import Text.XHtml (tt)
-import System.Win32 (xBUTTON1, SECURITY_ATTRIBUTES (nLength))
 
 -- Define evenerything that is undefined,
 -- without using standard Haskell functions.

@@ -40,8 +40,7 @@ instance Enum Bool where
 -- conjunction (AND)
 (&&) :: Bool -> Bool -> Bool
 True && j = j
-j && True = j
-j && u = False
+False && u = False
 
 infixr 3 &&
 
