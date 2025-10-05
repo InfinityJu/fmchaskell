@@ -141,66 +141,131 @@ drop i [] = []
 drop 0 xs = xs
 drop i (x : xs) = drop (i - 1) xs
 
+takeWhile :: (a -> Bool) -> [a] -> [a]
 takeWhile b [] = []
 takeWhile b (x : xs) =
   if b x
     then x: takeWhile b xs
     else []
 
+dropWhile :: (a -> Bool) -> [a] -> [a]
 dropWhile b [] = []
 dropWhile b (x : xs) =
   if b x
     then dropWhile b xs
     else x : xs
 
+tails :: [a] -> [[a]]
 tails [] = [[]]
 tails (x : xs) = (x : xs) : tails xs
 
+init :: [a] -> [a]
 init [] = error "Nil List"
 init [x] = []
 init (x : xs) = x: init xs
 
+inits :: [a] -> [[a]]
 inits [] = error "Nil List"
 inits [x] = [[]]
 inits xs = snoc (init xs) (inits (init xs))
 
 -- subsequences
 
+any :: (t -> Bool) -> [t] -> Bool
 any b [] = False
 any b [x] = b x
 any b (x : xs) = b x || any b xs
 
+all :: (t -> Bool) -> [t] -> Bool
 all b [] = error "Nil List"
 all b [x] = b x
 all b (x : xs) = b x && all b xs
 
+and :: [Bool] -> Bool
 and [] = True
 and [b] = b
 and (b : bs) = b && and bs
 
+or :: [Bool] -> Bool
 or [] = False
 or [b] = b
 or (b : bs) = b || or bs
 
--- concat
+concat :: [[a]] -> [a]
+concat [] = []
+concat [[], xs] = xs
+concat (xs : xss) = xs ++ concat xss
 
 -- elem using the funciton 'any' above
+elem :: Eq j => j -> [j] -> Bool
+elem x [] = False
+elem x xs = any (== x) xs
 
 -- elem': same as elem but elementary definition
 -- (without using other functions except (==))
+elem' :: Eq a => a -> [a] -> Bool
+elem' e [] = False
+elem' e (x : xs) = (e == x) || elem' e xs
 
 -- (!!)
 
--- filter
--- map
+filter :: (a -> Bool) -> [a] -> [a]
+filter b [] = []
+filter b (x : xs) =
+  if b x
+    then x : filter b xs
+    else filter b xs
 
--- cycle
--- repeat
--- replicate
+map :: (j -> u) -> [j] -> [u]
+map f [] = []
+map f (x : xs) = f x : map f xs
 
--- isPrefixOf
--- isInfixOf
--- isSuffixOf
+cycle :: [a] -> [a]
+cycle [] = []
+cycle xs = xs ++ cycle xs
+
+repeat :: a -> [a]
+repeat x = [x] ++ repeat x
+
+replicate :: Int -> a -> [a]
+replicate 0 _ = []
+replicate i x = [x] ++ replicate (i - 1) x
+
+isPrefixOf :: Eq a => [a] -> [a] -> Bool
+isPrefixOf [] _ = True
+isPrefixOf (x : xs) [] = False
+isPrefixOf (x : xs) (y : ys)= (x == y) && isPrefixOf xs ys
+
+isInfixOf [] _ = True
+isInfixOf (j : us) [] = False
+isInfixOf (j : us) (l : is) =
+  if isSuffixOf (j : us) (l : is)
+    then True
+    else 
+      if (j == l)
+        then isPrefixOf us is
+        else isInfixOf (j : us) is
+
+
+
+
+ -- case isPrefixOf (j : us) (l :(i : as)) of
+   -- True -> True
+   -- False ->
+     -- case isSuffixOf (j : us) (l :(i : as)) of
+       -- True -> True
+        --False ->
+          --if (j == i)
+            --then isPrefixOf us as
+            --else isInfixOf (j : us) as
+
+isSuffixOf :: Eq a => [a] -> [a] -> Bool
+isSuffixOf [] [] = True
+isSuffixOf xs [] = False
+isSuffixOf (x : xs) (y : ys) =
+  if length ys > length xs
+    then isSuffixOf (x : xs) ys
+    else (x == y) && isSuffixOf xs ys
 
 -- zip
 -- zipWith
