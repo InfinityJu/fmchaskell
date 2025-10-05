@@ -111,26 +111,76 @@ xs +++ (y:ys) = (xs +++ [y]) +++ ys
 -- (hmm?!)
 infixl 5 +++
 
--- minimum :: Ord a => [a] -> a
--- maximum :: Ord a => [a] -> a
+minimum :: Ord a => [a] -> a
+minimum [] = error "Nil list"
+minimum (x : xs) =
+  case xs of
+    [] -> x
+    (y : ys) ->
+      if x <= y
+        then minimum (x : ys)
+        else minimum (y : ys)
 
--- take
--- drop
+maximum :: Ord a => [a] -> a
+maximum [] = error "Nil list"
+maximum (x : xs) =
+  case xs of
+    [] -> x
+    (y : ys) ->
+      if y <= x
+        then maximum (x : ys)
+        else maximum (y : ys)
 
--- takeWhile
--- dropWhile
+take :: Int -> [a] -> [a]
+take i [] = error "Insufficient items in list"
+take 1 (x : xs) = [x]
+take i (x : xs) = x : take (i-1) xs
 
--- tails
--- init
--- inits
+drop :: Int -> [a] -> [a]
+drop i [] = []
+drop 0 xs = xs
+drop i (x : xs) = drop (i - 1) xs
+
+takeWhile b [] = []
+takeWhile b (x : xs) =
+  if b x
+    then x: takeWhile b xs
+    else []
+
+dropWhile b [] = []
+dropWhile b (x : xs) =
+  if b x
+    then dropWhile b xs
+    else x : xs
+
+tails [] = [[]]
+tails (x : xs) = (x : xs) : tails xs
+
+init [] = error "Nil List"
+init [x] = []
+init (x : xs) = x: init xs
+
+inits [] = error "Nil List"
+inits [x] = [[]]
+inits xs = snoc (init xs) (inits (init xs))
 
 -- subsequences
 
--- any
--- all
+any b [] = False
+any b [x] = b x
+any b (x : xs) = b x || any b xs
 
--- and
--- or
+all b [] = error "Nil List"
+all b [x] = b x
+all b (x : xs) = b x && all b xs
+
+and [] = True
+and [b] = b
+and (b : bs) = b && and bs
+
+or [] = False
+or [b] = b
+or (b : bs) = b || or bs
 
 -- concat
 
