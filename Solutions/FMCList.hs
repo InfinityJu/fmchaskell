@@ -207,7 +207,10 @@ elem' :: Eq a => a -> [a] -> Bool
 elem' e [] = False
 elem' e (x : xs) = (e == x) || elem' e xs
 
--- (!!)
+(!!) :: Int -> [a] -> a
+_ !! [] = error "Insufficient items in list"
+0 !! (x : xs) = x
+i !! (x : xs) = (i - 1) !! xs
 
 filter :: (a -> Bool) -> [a] -> [a]
 filter b [] = []
@@ -236,28 +239,16 @@ isPrefixOf [] _ = True
 isPrefixOf (x : xs) [] = False
 isPrefixOf (x : xs) (y : ys)= (x == y) && isPrefixOf xs ys
 
+isInfixOf :: Eq a => [a] -> [a] -> Bool
 isInfixOf [] _ = True
 isInfixOf (j : us) [] = False
 isInfixOf (j : us) (l : is) =
   if isSuffixOf (j : us) (l : is)
     then True
-    else 
+    else
       if (j == l)
         then isPrefixOf us is
         else isInfixOf (j : us) is
-
-
-
-
- -- case isPrefixOf (j : us) (l :(i : as)) of
-   -- True -> True
-   -- False ->
-     -- case isSuffixOf (j : us) (l :(i : as)) of
-       -- True -> True
-        --False ->
-          --if (j == i)
-            --then isPrefixOf us as
-            --else isInfixOf (j : us) as
 
 isSuffixOf :: Eq a => [a] -> [a] -> Bool
 isSuffixOf [] [] = True
@@ -267,15 +258,38 @@ isSuffixOf (x : xs) (y : ys) =
     then isSuffixOf (x : xs) ys
     else (x == y) && isSuffixOf xs ys
 
--- zip
--- zipWith
+zip :: [a] -> [b] -> [(a,b)]
+zip [] _ = []
+zip (x : xs) [] = []
+zip (x : xs) (y : ys) = (x, y) : zip xs ys
 
--- intercalate
--- nub
+zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
+zipWith f [] _ = []
+zipWith f _ [] = []
+zipWith f (x : xs) (y : ys) = f x y : zipWith f xs ys
+
+intercalate :: a -> [a] -> [a]
+intercalate _ [] = []
+intercalate _ [x] = [x]
+intercalate x (y : ys) = y :(x : intercalate x ys)
+
+nub :: Eq a => [a] -> [a]
+nub [] = []
+nub (x : xs) = x : nub (filter (/= x) xs)
 
 -- splitAt
 -- what is the problem with the following?:
 -- splitAt n xs  =  (take n xs, drop n xs)
+      -- it crashes if n is greater then the length of xs
+splitAt :: Int -> [a] -> ([a], [a])
+splitAt i [] =
+  case i of
+    0 -> ([],[])
+    y -> error "Nil lst"
+splitAt i xs
+  | i == length xs = (xs,[])
+  | i == 0 = ([],xs)
+  | otherwise = (take i xs, drop i xs)
 
 -- break
 
