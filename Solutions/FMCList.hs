@@ -291,7 +291,9 @@ splitAt i xs
   | i == 0 = ([],xs)
   | otherwise = (take i xs, drop i xs)
 
--- break
+break :: (a -> Bool) -> [a] -> ([a], [a])
+break f [] = ([],[])
+break f xs = (takeWhile (not . f) xs, dropWhile (not . f) xs)
 
 -- lines
 -- words
