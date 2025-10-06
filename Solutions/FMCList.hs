@@ -289,7 +289,8 @@ splitAt i [] =
 splitAt i xs
   | i == length xs = (xs,[])
   | i == 0 = ([],xs)
-  | otherwise = (take i xs, drop i xs)
+  | i < length xs = (take i xs, drop i xs)
+  | i > length xs = error "Insufficient items in list"
 
 break :: (a -> Bool) -> [a] -> ([a], [a])
 break f [] = ([],[])
