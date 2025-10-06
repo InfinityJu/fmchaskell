@@ -295,6 +295,8 @@ break :: (a -> Bool) -> [a] -> ([a], [a])
 break f [] = ([],[])
 break f xs = (takeWhile (not . f) xs, dropWhile (not . f) xs)
 
+-- I have no idea how to use strings in haskell (my bad!!!!!!)
+
 -- lines
 -- words
 -- unlines
